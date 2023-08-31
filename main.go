@@ -155,9 +155,9 @@ func main() {
 
 	totalTime := time.Second * time.Duration(studyMinutes)
 	bt := time.Second * 2
-	st := time.Second * 3
+	st := time.Second * 4
 	bbt := time.Second * 7
-    
+
 	p := tea.NewProgram(initialModel(totalTime, st, bt, bbt, prog))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
