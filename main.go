@@ -119,18 +119,15 @@ func (m *model) View() string {
         
 		if m.isBreak {
 			if (m.cycle % 4) == 0 {
-				// status = fmt.Sprintf("*********************\nBig Break time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Seconds(), m.bigBreakPercent*100)
-                status = m.progress.ViewAs(m.bigBreakPercent)
-                
+				status = fmt.Sprintf("*********************\nBig Break time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Minutes(), m.bigBreakPercent*100)
+
 			} else {
-				// status = fmt.Sprintf("*********************\nBreak time! Time remaining: %s, Elapsed: %v, percent %.1f%% ", m.remaining.String(), m.elapsedTime.Seconds(), m.breakPercent*100)
-                status = m.progress.ViewAs(m.breakPercent)
-                
+				status = fmt.Sprintf("*********************\nBreak time! Time remaining: %s, Elapsed: %v, percent %.1f%% ", m.remaining.String(), m.elapsedTime.Minutes(), m.breakPercent*100)
+
 			}
 		} else {
-			// status = fmt.Sprintf("*********************\nStudy time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Seconds(), m.studyPercent*100)
-            status = m.progress.ViewAs(m.studyPercent)
-            
+			status = fmt.Sprintf("*********************\nStudy time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Minutes(), m.studyPercent*100)
+
 		}
 		
 	} else {
@@ -138,13 +135,13 @@ func (m *model) View() string {
 		status = "Press 's' to start the timer."
 	}
 
-	return fmt.Sprintf("%s\nPress q to quit. Elapsed %v", status, m.elapsedTime)
+	return fmt.Sprintf("%s\nPress q to quit.", status)
 }
 
 
 func main() {
 	var studyMinutes int
-	fmt.Print("Enter total study time (seconds): ")
+	fmt.Print("Enter total study time (minutes): ")
 
 	_, err := fmt.Scan(&studyMinutes)
 	if err != nil {
@@ -152,12 +149,11 @@ func main() {
 		return
 	}
 	prog := progress.New(progress.WithScaledGradient("#FF7CCB", "#FDFF8C"))
+	totalTime := time.Minute * time.Duration(studyMinutes)
 
-	totalTime := time.Second * time.Duration(studyMinutes)
-	bt := time.Second * 2
-	st := time.Second * 4
-	bbt := time.Second * 7
-
+	bt := time.Minute * 1
+	st := time.Minute * 2
+	bbt := time.Minute * 3
 	p := tea.NewProgram(initialModel(totalTime, st, bt, bbt, prog))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
