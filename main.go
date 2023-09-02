@@ -151,9 +151,9 @@ func main() {
 	prog := progress.New(progress.WithScaledGradient("#FF7CCB", "#FDFF8C"))
 	totalTime := time.Minute * time.Duration(studyMinutes)
 
-	bt := time.Minute * 1
-	st := time.Minute * 2
-	bbt := time.Minute * 3
+	bt := time.Minute * 5
+	st := time.Minute * 25
+	bbt := time.Minute * 15
 	p := tea.NewProgram(initialModel(totalTime, st, bt, bbt, prog))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
