@@ -29,7 +29,7 @@ type model struct {
 	studyPercent    float64
 	breakPercent    float64
 	bigBreakPercent float64
-	progress        progress.Model
+	progressBar       progress.Model
 }
 
 func (*model) Init() tea.Cmd {
@@ -49,10 +49,11 @@ func initialModel(totalTime, studyTime, breakTime, bigBreakTime time.Duration, p
 		studyPercent:    0.0,
 		breakPercent:    0.0,
 		bigBreakPercent: 0.0,
-		progress:        progress,
+		progressBar:        progress,
 	}
 }
 func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	m.progressBar.SetPercent(m.percent)
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.String() {
@@ -66,9 +67,9 @@ func (m *model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 		}
 	case tea.WindowSizeMsg:
-		m.progress.Width = msg.Width - padding*2 - 4
-		if m.progress.Width > maxWidth {
-			m.progress.Width = maxWidth
+		m.progressBar.Width = msg.Width - padding*2 - 4
+		if m.progressBar.Width > maxWidth {
+			m.progressBar.Width = maxWidth
 		}
 		return m, nil
 	case tickMsg:
@@ -119,14 +120,14 @@ func (m *model) View() string {
         
 		if m.isBreak {
 			if (m.cycle % 4) == 0 {
-				status = fmt.Sprintf("*********************\nBig Break time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Minutes(), m.bigBreakPercent*100)
+				status = fmt.Sprintf("*********************\nBig Break time! Time remaining: %s, Elapsed: %vm, percent %.1f%%", m.remaining.String(), m.elapsedTime.Minutes(), m.bigBreakPercent*100)
 
 			} else {
-				status = fmt.Sprintf("*********************\nBreak time! Time remaining: %s, Elapsed: %v, percent %.1f%% ", m.remaining.String(), m.elapsedTime.Minutes(), m.breakPercent*100)
+				status = fmt.Sprintf("*********************\nBreak time! Time remaining: %s, Elapsed: %vm, percent %.1f%% ", m.remaining.String(), m.elapsedTime.Minutes(), m.breakPercent*100)
 
 			}
 		} else {
-			status = fmt.Sprintf("*********************\nStudy time! Time remaining: %s, Elapsed: %v, percent %.1f%%", m.remaining.String(), m.elapsedTime.Minutes(), m.studyPercent*100)
+			status = fmt.Sprintf("*********************\nStudy time! Time remaining: %s, Elapsed: %vm, percent %.1f%%",m.remaining.String(), m.elapsedTime.Minutes(), m.studyPercent*100)
 
 		}
 		
@@ -149,11 +150,12 @@ func main() {
 		return
 	}
 	prog := progress.New(progress.WithScaledGradient("#FF7CCB", "#FDFF8C"))
+	
 	totalTime := time.Minute * time.Duration(studyMinutes)
-
 	bt := time.Minute * 5
 	st := time.Minute * 25
 	bbt := time.Minute * 15
+
 	p := tea.NewProgram(initialModel(totalTime, st, bt, bbt, prog))
 	if _, err := p.Run(); err != nil {
 		fmt.Printf("Alas, there's been an error: %v", err)
